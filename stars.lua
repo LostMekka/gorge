@@ -20,12 +20,11 @@ Stars.noise:setWrap("repeat", "repeat")
 Stars.noise:setFilter("linear", "linear")
 Stars.shader = G.newShader([[
 float perlin(sampler2D n, vec2 p) {
-	float c = 0;
-	c += texture2D(n, p *  1).r /  1;
-	c += texture2D(n, p *  2).g /  2;
-	c += texture2D(n, p *  4).b /  4;
-	c += texture2D(n, p *  8).a /  8;
-	c += texture2D(n, p * 16).r / 16;
+	float c = texture2D(n, p *  1).r /  1
+		+ texture2D(n, p *  2).g /  2
+		+ texture2D(n, p *  4).b /  4
+		+ texture2D(n, p *  8).a /  8
+		+ texture2D(n, p * 16).r / 16;
 	return c / 2;
 }
 uniform sampler2D noise;
