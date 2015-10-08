@@ -20,23 +20,27 @@ Stars.noise:setWrap("repeat", "repeat")
 Stars.noise:setFilter("linear", "linear")
 Stars.shader = G.newShader([[
 float perlin(sampler2D n, vec2 p) {
-	float c = texture2D(n, p *  1).r /  1
-			+ texture2D(n, p *  2).g /  2
-			+ texture2D(n, p *  4).b /  4
-			+ texture2D(n, p *  8).a /  8
-			+ texture2D(n, p * 16).r / 16;
+	float c = 0;
+	c += texture2D(n, p *  1).r /  1;
+	c += texture2D(n, p *  2).g /  2;
+	c += texture2D(n, p *  4).b /  4;
+	c += texture2D(n, p *  8).a /  8;
+	c += texture2D(n, p * 16).r / 16;
 	return c / 2;
 }
 uniform sampler2D noise;
 uniform float xx;
 vec4 effect(vec4 col, sampler2D tex, vec2 tex_coords, vec2 screen_coords) {
 ]]..(COMPATIBILITY and "screen_coords.y = 150 - screen_coords.y;" or "")..[[
-	vec2 p = (screen_coords - vec2(0, xx)) * 0.00005;
-	float f = max(0, pow(perlin(noise, p), 1) - 0.41);
+	vec2 p1 = (screen_coords - vec2(0, xx*0.8)) * 0.00005;
+	vec2 p2 = (screen_coords - vec2(133.5333, xx*1.8 + 100.7443)) * 0.00005;
+	float f1 = pow(perlin(noise, p1), 1.5) * 1.1;
+	float f2 = pow(perlin(noise, p2), 2.5) * 0.3;
+	float f = max(0, f1 + f2 - 0.3);
 	f = floor(f * 16.0) / 16.0;
 	if (f > 0) f += 0.1;
 	f *= f * 1.2;
-	vec3 c = vec3(0.4, 0.5, 0.5) * f;
+	vec3 c = vec3(0.4, 0.5, 4*f2) * f;
 	return vec4(c, 1);
 }]])
 Stars.shader:send("noise", Stars.noise)
@@ -66,7 +70,7 @@ function Stars:reset(rand)
 	end
 end
 function Stars:update(speed)
-	self.xx = self.xx + 0.1 * speed
+	self.xx = self.xx + 0.2 * speed
 
 	for _, s in ipairs(self.list) do
 		s.y = s.y + s.dy * speed
